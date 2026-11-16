@@ -1,0 +1,6 @@
+{
+  "name": "SubTracker - Quản lý đăng ký dịch vụ & Gia hạn",
+  "description": "Ứng dụng quản lý đăng ký dịch vụ, hosting, tên miền, và các khoản thanh toán định kỳ với cảnh báo thông minh và lịch sử gia hạn.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
