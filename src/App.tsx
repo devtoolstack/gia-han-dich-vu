@@ -8,6 +8,7 @@ import { SubscriptionFilters } from './components/SubscriptionFilters';
 import { SubscriptionTable } from './components/SubscriptionTable';
 import { SubscriptionModal } from './components/SubscriptionModal';
 import { ExportImportModal } from './components/ExportImportModal';
+import { NotificationModal } from './components/NotificationModal';
 import { Inbox, Plus } from 'lucide-react';
 
 export default function App() {
@@ -37,6 +38,7 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
   const [isExportImportOpen, setIsExportImportOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
   // Save to localStorage
   useEffect(() => {
@@ -113,6 +115,7 @@ export default function App() {
         }}
         onExportClick={() => setIsExportImportOpen(true)}
         onImportClick={() => setIsExportImportOpen(true)}
+        onNotificationClick={() => setIsNotificationModalOpen(true)}
         onResetData={handleResetData}
         exchangeRate={exchangeRate}
         onUpdateExchangeRate={(rate) => setExchangeRate(rate)}
@@ -208,6 +211,12 @@ export default function App() {
         onImportData={(imported) => {
           setSubscriptions(imported);
         }}
+      />
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={isNotificationModalOpen}
+        onClose={() => setIsNotificationModalOpen(false)}
       />
     </div>
   );
