@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Subscription, Currency, BillingCycle } from '../types';
+import { formatDateVN } from '../utils/helpers';
 import { X, Calendar, DollarSign, FileText } from 'lucide-react';
 
 interface SubscriptionModalProps {
@@ -173,11 +174,17 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1 flex items-center">
-                  <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày đăng ký/gia hạn gần nhất
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center">
+                    <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày gần nhất
+                  </label>
+                  <span className="text-[11px] font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
+                    DD/MM/YYYY: {formatDateVN(lastRenewalDate)}
+                  </span>
+                </div>
                 <input
                   type="date"
+                  lang="vi-VN"
                   required
                   value={lastRenewalDate}
                   onChange={(e) => setLastRenewalDate(e.target.value)}
@@ -189,11 +196,17 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
           {billingCycle === 'custom' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1 flex items-center">
-                <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày đăng ký/gia hạn gần nhất
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center">
+                  <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày gần nhất
+                </label>
+                <span className="text-[11px] font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
+                  DD/MM/YYYY: {formatDateVN(lastRenewalDate)}
+                </span>
+              </div>
               <input
                 type="date"
+                lang="vi-VN"
                 required
                 value={lastRenewalDate}
                 onChange={(e) => setLastRenewalDate(e.target.value)}
@@ -204,11 +217,17 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
           {/* Next Renewal Date */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1 flex items-center">
-              <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày cần gia hạn tiếp theo
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center">
+                <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày cần gia hạn tiếp theo
+              </label>
+              <span className="text-[11px] font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
+                DD/MM/YYYY: {formatDateVN(renewalDate)}
+              </span>
+            </div>
             <input
               type="date"
+              lang="vi-VN"
               required
               value={renewalDate}
               onChange={(e) => setRenewalDate(e.target.value)}
