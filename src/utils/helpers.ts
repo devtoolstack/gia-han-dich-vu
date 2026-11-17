@@ -55,5 +55,28 @@ export function formatDateVN(dateStr: string): string {
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
 
-// Empty initial subscriptions for clean deployment
+// Convert ISO (YYYY-MM-DD) to Display DD/MM/YYYY
+export function isoToDisplayDate(isoStr: string): string {
+  if (!isoStr) return '';
+  const parts = isoStr.split('-');
+  if (parts.length !== 3) return isoStr;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+// Convert Display DD/MM/YYYY (or DD-MM-YYYY) to ISO (YYYY-MM-DD)
+export function displayToIsoDate(displayStr: string): string {
+  if (!displayStr) return new Date().toISOString().split('T')[0];
+  const cleaned = displayStr.trim().replace(/-/g, '/');
+  const parts = cleaned.split('/');
+  if (parts.length === 3) {
+    const day = parts[0].padStart(2, '0');
+    const month = parts[1].padStart(2, '0');
+    const year = parts[2];
+    if (year.length === 4 && !isNaN(Number(day)) && !isNaN(Number(month)) && !isNaN(Number(year))) {
+      return `${year}-${month}-${day}`;
+    }
+  }
+  return displayStr; // Fallback
+}
+
 export const INITIAL_SUBSCRIPTIONS: Subscription[] = [];

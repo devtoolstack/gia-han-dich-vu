@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Subscription, Currency, BillingCycle } from '../types';
-import { formatDateVN } from '../utils/helpers';
+import { isoToDisplayDate, displayToIsoDate } from '../utils/helpers';
 import { X, Calendar, DollarSign, FileText } from 'lucide-react';
 
 interface SubscriptionModalProps {
@@ -21,19 +21,22 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [currency, setCurrency] = useState<Currency>('VND');
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [customMonths, setCustomMonths] = useState<number>(2);
-  const [lastRenewalDate, setLastRenewalDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [renewalDate, setRenewalDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  
+  // Display string in DD/MM/YYYY format for user input
+  const [lastRenewalDisplay, setLastRenewalDisplay] = useState<string>('');
+  const [renewalDisplay, setRenewalDisplay] = useState<string>('');
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
+    const todayIso = new Date().toISOString().split('T')[0];
     if (editingSubscription) {
       setName(editingSubscription.name);
       setPrice(editingSubscription.price.toString());
       setCurrency(editingSubscription.currency);
       setBillingCycle(editingSubscription.billingCycle);
       setCustomMonths(editingSubscription.customMonths || 2);
-      setLastRenewalDate(editingSubscription.lastRenewalDate);
-      setRenewalDate(editingSubscription.renewalDate);
+      setLastRenewalDisplay(isoToDisplayDate(editingSubscription.lastRenewalDate || todayIso));
+      setRenewalDisplay(isoToDisplayDate(editingSubscription.renewalDate || todayIso));
       setNotes(editingSubscription.notes || '');
     } else {
       setName('');
@@ -41,8 +44,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       setCurrency('VND');
       setBillingCycle('monthly');
       setCustomMonths(2);
-      setLastRenewalDate(new Date().toISOString().split('T')[0]);
-      setRenewalDate(new Date().toISOString().split('T')[0]);
+      setLastRenewalDisplay(isoToDisplayDate(todayIso));
+      setRenewalDisplay(isoToDisplayDate(todayIso));
       setNotes('');
     }
   }, [editingSubscription, isOpen]);
@@ -61,6 +64,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       return;
     }
 
+    const lastRenewalIso = displayToIsoDate(lastRenewalDisplay);
+    const renewalIso = displayToIsoDate(renewalDisplay);
+
     onSave({
       id: editingSubscription ? editingSubscription.id : undefined,
       name: name.trim(),
@@ -68,8 +74,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       currency,
       billingCycle,
       customMonths: billingCycle === 'custom' ? Number(customMonths) : undefined,
-      lastRenewalDate,
-      renewalDate,
+      lastRenewalDate: lastRenewalIso,
+      renewalDate: renewalIso,
       notes: notes.trim(),
     });
     onClose();
@@ -174,21 +180,16 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               </div>
             ) : (
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center">
-                    <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày gần nhất
-                  </label>
-                  <span className="text-[11px] font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
-                    DD/MM/YYYY: {formatDateVN(lastRenewalDate)}
-                  </span>
-                </div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1 flex items-center">
+                  <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày gần nhất (DD/MM/YYYY)
+                </label>
                 <input
-                  type="date"
-                  lang="vi-VN"
+                  type="text"
                   required
-                  value={lastRenewalDate}
-                  onChange={(e) => setLastRenewalDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  placeholder="DD/MM/YYYY (VD: 28/10/2026)"
+                  value={lastRenewalDisplay}
+                  onChange={(e) => setLastRenewalDisplay(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-slate-900 font-mono"
                 />
               </div>
             )}
@@ -196,42 +197,32 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
           {billingCycle === 'custom' && (
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center">
-                  <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày gần nhất
-                </label>
-                <span className="text-[11px] font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
-                  DD/MM/YYYY: {formatDateVN(lastRenewalDate)}
-                </span>
-              </div>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1 flex items-center">
+                <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày gần nhất (DD/MM/YYYY)
+              </label>
               <input
-                type="date"
-                lang="vi-VN"
+                type="text"
                 required
-                value={lastRenewalDate}
-                onChange={(e) => setLastRenewalDate(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-slate-900"
+                placeholder="DD/MM/YYYY (VD: 28/10/2026)"
+                value={lastRenewalDisplay}
+                onChange={(e) => setLastRenewalDisplay(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-slate-900 font-mono"
               />
             </div>
           )}
 
           {/* Next Renewal Date */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center">
-                <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày cần gia hạn tiếp theo
-              </label>
-              <span className="text-[11px] font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
-                DD/MM/YYYY: {formatDateVN(renewalDate)}
-              </span>
-            </div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1 flex items-center">
+              <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> Ngày cần gia hạn tiếp theo (DD/MM/YYYY)
+            </label>
             <input
-              type="date"
-              lang="vi-VN"
+              type="text"
               required
-              value={renewalDate}
-              onChange={(e) => setRenewalDate(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-slate-900"
+              placeholder="DD/MM/YYYY (VD: 28/11/2026)"
+              value={renewalDisplay}
+              onChange={(e) => setRenewalDisplay(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-slate-900 font-mono"
             />
           </div>
 
